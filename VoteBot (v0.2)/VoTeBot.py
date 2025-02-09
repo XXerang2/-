@@ -13,7 +13,7 @@ class PollView(discord.ui.View):
     def __init__(self, question, timeout=600):  # 기본 10분 (600초)
         super().__init__(timeout=timeout)
         self.question = question
-        self.votes = {"🟦": [], "🟥": []}  # 사용자 리스트로 저장
+        self.votes = {"🟥": [], "🟦": []}  # 사용자 리스트로 저장
         self.user_votes = {}  # {유저ID: 선택}
         self.message = None
         self.start_time = time.time()
@@ -72,13 +72,13 @@ class PollView(discord.ui.View):
         if self.message:
             await self.message.edit(embed=result_embed, view=self)
 
-    @discord.ui.button(label="🟦 왼쪽", style=discord.ButtonStyle.success)
+    @discord.ui.button(label="🟥 왼쪽", style=discord.ButtonStyle.danger)
     async def vote_yes(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await self.vote(interaction, "🟦")
-
-    @discord.ui.button(label="🟥 오른쪽", style=discord.ButtonStyle.danger)
-    async def vote_no(self, interaction: discord.Interaction, button: discord.ui.Button):
         await self.vote(interaction, "🟥")
+
+    @discord.ui.button(label="🟦 오른쪽", style=discord.ButtonStyle.primary)
+    async def vote_no(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self.vote(interaction, "🟦")
 
     async def vote(self, interaction: discord.Interaction, option: str):
         """투표를 처리하는 함수"""
@@ -121,8 +121,8 @@ async def 투표(ctx, *, question):
         description=f"💁‍♀️【질문】: **{question}**\n\n⏰【시간 제한】: 10분",
         color=discord.Color.green()
     )
-    embed.add_field(name="🟦", value="왼쪽", inline=True)
-    embed.add_field(name="🟥", value="오른쪽", inline=True)
+    embed.add_field(name="🟥", value="왼쪽", inline=True)
+    embed.add_field(name="🟦", value="오른쪽", inline=True)
 
     message = await ctx.send(embed=embed, view=view)
     view.message = message
